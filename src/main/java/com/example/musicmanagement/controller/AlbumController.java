@@ -3,8 +3,10 @@ package com.example.musicmanagement.controller;
 import com.example.musicmanagement.entity.Album;
 import com.example.musicmanagement.entity.Music;
 import com.example.musicmanagement.form.AlbumForm;
+import com.example.musicmanagement.form.MusicForm;
 import com.example.musicmanagement.service.AlbumService;
 import com.example.musicmanagement.service.MusicService;
+import com.example.musicmanagement.viewmodel.AlbumViewModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +29,8 @@ public class AlbumController {
 
     @GetMapping
     public String albums(Model model){
-        List<Album> albums = albumService.getAllAlbums();
+        // List<Album> albums = albumService.getAllAlbums();
+        List<AlbumViewModel> albums = albumService.getAllAlbumsWithMusicCount();
         model.addAttribute("albums", albums);
         return "album/album-list";
     }
@@ -71,5 +74,40 @@ public class AlbumController {
     public String updateAlbum(@PathVariable long albumId, Album album){
         albumService.updateAlbum(albumId, album);
         return "redirect:/albums";
+    }
+
+    @GetMapping("/{albumId}/musics/new")
+    public String createMusicForm(@PathVariable long albumId, Model model){
+        MusicForm musicForm = new MusicForm();
+        musicForm.setAlbumId(albumId);
+        model.addAttribute("musicForm", musicForm);
+
+        return "music/music-form";
+    }
+
+    @PostMapping("/{albumId}/musics/new")
+    public String createMusic(@PathVariable long albumId, MusicForm musicForm){
+        musicService.createMusic(musicForm);
+
+        return "redirect:/albums/" + albumId;
+    }
+
+    @PostMapping("/{albumId}/musics/{musicId}/delete")
+    public String deleteMusic(@PathVariable long albumId, @PathVariable long musicId){
+        musicService.deleteMusicById(musicId);
+        return "redirect:/albums/" + albumId;
+    }
+
+    @GetMapping("/{albumId}/musics/{musicId}/edit")
+    public String editMusic(@PathVariable long albumId, @PathVariable long musicId, Model model){
+        Music music = musicService.getMusicById(musicId);
+        model.addAttribute("music", music);
+        return "music/music-edit";
+    }
+
+    @PostMapping("/{albumId}/musics/{musicId}/edit")
+    public String updateMusic(@PathVariable long albumId, @PathVariable long musicId, Music music){
+        musicService.updateMusic(musicId , music);
+        return "redirect:/albums/" + albumId;
     }
 }

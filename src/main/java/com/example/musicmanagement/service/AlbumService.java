@@ -3,6 +3,7 @@ package com.example.musicmanagement.service;
 import com.example.musicmanagement.entity.Album;
 import com.example.musicmanagement.form.AlbumForm;
 import com.example.musicmanagement.repository.AlbumRepository;
+import com.example.musicmanagement.viewmodel.AlbumViewModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,5 +41,9 @@ public class AlbumService {
             throw new IllegalArgumentException("Album ID do not match");
         }
         albumRepository.updateAlbum(album);
+    }
+
+    public List<AlbumViewModel> getAllAlbumsWithMusicCount(){
+        return albumRepository.getAllAlbumsWithMusicCount();
     }
 }
